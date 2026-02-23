@@ -2,6 +2,7 @@ import pkg from "whatsapp-web.js";
 import qrcode from "qrcode-terminal";
 import { Client as ClientType } from "whatsapp-web.js";
 import { handleMessages } from "./services/messageHandler.service.js";
+import { getBanner } from "./utils/banner.js";
 
 const { Client, LocalAuth } = pkg;
 export class WhatsAppBot {
@@ -16,8 +17,6 @@ export class WhatsAppBot {
           "--no-sandbox",
           "--disable-setuid-sandbox",
           "--disable-dev-shm-usage",
-          "--disable-gpu",
-          "--disable-web-security",
         ],
         timeout: 60000,
       },
@@ -27,35 +26,41 @@ export class WhatsAppBot {
   }
 
   private initializeEvents() {
-    // disconnect error
-    this.client.on("disconnected", (reason) => {
-      console.log("Client was logged out:", reason);
+    this.client.on("qr", (qr) => {
+      console.log("Scan QR to login:");
+      qrcode.generate(qr, { small: true });
     });
 
-    // auth fail error
+    this.client.on("ready", () => {
+      console.log("✔  WhatsApp Connected");
+    });
+
     this.client.on("auth_failure", (msg) => {
       console.log("Auth failed:", msg);
     });
 
-    // QR Code Event
-    this.client.on("qr", (qr) => {
-      console.log("Scan this QR code to login:");
-      qrcode.generate(qr, { small: true });
+    this.client.on("disconnected", (reason) => {
+      console.log("Disconnected:", reason);
+
+      console.log("Reconnecting...");
+      this.client.initialize();
     });
 
-    // Ready Event
-    this.client.on("ready", () => {
-      console.log("WhatsApp Bot is READY and connected!");
-    });
-
-    // Message Event
     this.client.on("message", async (message) => {
-      await handleMessages(message);
+      try {
+        await handleMessages(message);
+      } catch (err) {
+        console.log("Message error:", err);
+      }
     });
   }
 
-  public start() {
-    this.client.initialize();
+  public async start() {
+    console.clear();
+    await getBanner();
+    this.client.initialize().catch((err) => {
+      console.log(err);
+    });
   }
 }
 export const botRebootTime = Date.now();
