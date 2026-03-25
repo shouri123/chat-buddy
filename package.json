@@ -12,13 +12,13 @@
     "cli",
     "assistant"
   ],
-  "homepage": "https://github.com/shouri123/BotWithHaki#readme",
+  "homepage": "https://github.com/snackoverflowasad/BotWithHaki#readme",
   "bugs": {
-    "url": "https://github.com/shouri123/BotWithHaki/issues"
+    "url": "https://github.com/snackoverflowasad/BotWithHaki"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shouri123/BotWithHaki.git"
+    "url": "https://github.com/snackoverflowasad/BotWithHaki"
   },
   "license": "MIT",
   "author": "Asad Hussain",
