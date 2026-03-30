@@ -134,6 +134,6 @@ WhatsApp Reply
 This project is licensed under the **[MIT License](LICENSE)**.
 
 Developed by [Asad Hussain](mailto:techie.asad.dev@gmail.com).  
-- **GitHub**: [@asad-bot07](https://github.com/Asad-bot07)  
+- **GitHub**: [@snackoverflowasad](https://github.com/snackoverflowasad)  
 - **LinkedIn**: [Asad Hussain](https://www.linkedin.com/in/asad-hussain-765502319/)  
 - **Portfolio**: [asadhussain.in](https://www.asadhussain.in/)
