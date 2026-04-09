@@ -5,6 +5,8 @@ import { getUserHistoryForContext } from "../storage/chatHistoryStore.js";
 import { getTime } from "../tools/time.tool.js";
 import { getChatHistory } from "../tools/getHistory.js";
 import { setReminderandMeetAgent } from "./setEvent.service.js";
+import { withRequesterContext } from "../storage/runContext.js";
+import { getLatestMeetingForRequesterSince } from "../storage/sessionMeetingStore.js";
 
 /**
  * Creates and runs the AI agent dynamically based on config.
@@ -51,7 +53,15 @@ export const runAgent = async (
 
   const input = `${historyContext}\n\nUser: ${userMessage}`;
 
-  const result = await run(agent, input);
+  const runStartedAt = Date.now();
+  const result = await withRequesterContext(contactName, () => run(agent, input));
 
-  return result.finalOutput || "Sorry, I couldn't respond.";
+  let finalOutput = result.finalOutput || "Sorry, I couldn't respond.";
+
+  const latestMeeting = getLatestMeetingForRequesterSince(contactName, runStartedAt);
+  if (latestMeeting && !finalOutput.includes(latestMeeting.meetLink)) {
+    finalOutput = `${finalOutput}\nMeet link: ${latestMeeting.meetLink}\nMeeting time: ${latestMeeting.meetingTime}`;
+  }
+
+  return finalOutput;
 };
