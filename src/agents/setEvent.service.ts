@@ -41,6 +41,7 @@ export const setReminderandMeetAgent = new Agent({
                 - Current timezone is Asia/Kolkata (UTC+05:30).
                 - When the user says "today", use this date.
                 - When the user says "tomorrow", calculate from this date.
+                - After creating a meeting, always include the Meet link and meeting time in your reply.
                 `,
   tools: [createReminderTool, createMeetingTool, getTime],
 });
