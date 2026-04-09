@@ -1,6 +1,9 @@
 import { tool } from "@openai/agents";
 import { z } from "zod";
+import pc from "picocolors";
 import { createMeeting } from "../services/googleMeet.service.js";
+import { getRequestedByFromContext } from "../storage/runContext.js";
+import { addSessionMeetingRecord } from "../storage/sessionMeetingStore.js";
 
 export const MeetingInputSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -32,18 +35,38 @@ export const createMeetingTool = tool({
 
   execute: async (input): Promise<MeetingOutput> => {
     try {
-      console.log("TOOL INPUT:", input);
-      const result = (await createMeeting(
+      const result = await createMeeting(
         input.title,
         input.description ?? "",
         input.date,
         input.attendees,
-      )) as { id: string; hangoutLink?: string } | null | undefined;
-      console.log("TOOL RESULT:", result);
+      );
+
+      const requestedBy = getRequestedByFromContext() ?? "unknown";
+      const meetLink = result?.hangoutLink ?? "N/A";
+
+      if (result?.hangoutLink) {
+        addSessionMeetingRecord({
+          requestedBy,
+          title: input.title,
+          meetingTime: input.date,
+          meetLink: result.hangoutLink,
+          eventId: result.id ?? undefined,
+        });
+      }
+
+      console.log(pc.green("[meeting]"));
+      console.log(pc.green(`requestedBy: ${requestedBy}`));
+      console.log(pc.green(`title: ${input.title}`));
+      console.log(pc.green(`dateTime: ${input.date}`));
+      console.log(pc.green(`meetLink: ${meetLink}`));
+
       const output: MeetingOutput = {
         success: true,
-        message: "Meeting created successfully",
-        eventId: result?.id,
+        message: result?.hangoutLink
+          ? `Meeting created successfully. Meet link: ${result.hangoutLink}. Time: ${input.date}`
+          : "Meeting created successfully",
+        eventId: result?.id ?? undefined,
         meetLink: result?.hangoutLink ?? undefined,
         scheduledFor: input.date,
       };
