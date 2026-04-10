@@ -15,7 +15,7 @@ Built with the OpenAI Agents SDK · Custom Tools · Per-User Memory · Guardrail
 
 ---
 
-[Installation](#installation) · [Quick Start](#quick-start) · [Commands](#commands) · [Architecture](#architecture) · [Chat Commands](#in-chat-commands) · [Security](#security--privacy)
+[Installation](#installation) · [Quick Start](#quick-start) · [Commands](#commands) · [Message Debounce and Token Optimization](#message-debounce-and-token-optimization) · [Architecture](#architecture) · [Chat Commands](#in-chat-commands) · [Security](#security--privacy)
 
 </div>
 
@@ -34,6 +34,7 @@ Built with the OpenAI Agents SDK · Custom Tools · Per-User Memory · Guardrail
 | **AES-256 Encryption** | API keys encrypted locally — never stored in plain text |
 | **Guardrails** | Output validation layer blocks unsafe or off-brand responses |
 | **Google Calendar** | Schedule meetings & reminders directly from WhatsApp |
+| **Debounced Replies** | Merges rapid user bursts into one AI call to reduce token usage |
 | **Zero Config Deploy** | Install globally, run the wizard, scan QR — done |
 
 ---
@@ -67,6 +68,68 @@ chat-buddy run
 ```
 
 That's it. Your AI assistant is now live on WhatsApp.
+
+---
+
+## Setting Up Google Calendar API
+
+To enable calendar features (scheduling meetings, reminders), you need to create Google OAuth 2.0 credentials.
+
+### Step 1: Create a Google Cloud Project
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Click on the project dropdown (top-left) and select **New Project**
+3. Name it (e.g., `Chat Buddy` or `WhatsApp Bot`)
+4. Click **Create** and wait for the project to initialize
+
+### Step 2: Enable Google Calendar API
+
+1. In the Cloud Console, go to **APIs & Services** → **Library**
+2. Search for "**Google Calendar API**"
+3. Click on it and select **Enable**
+4. Wait for the API to be enabled (you'll see a blue "Manage" button)
+
+### Step 3: Create OAuth 2.0 Credentials
+
+1. Go to **APIs & Services** → **Credentials**
+2. Click **Create Credentials** (top button)
+3. Select **OAuth 2.0 Client IDs**
+4. For **Application Type**, choose **Desktop application**
+5. Click **Create**
+6. A dialog appears with your **Client ID** and **Client Secret** — copy these values
+
+### Step 4: Download Credentials (Optional)
+
+1. In the Credentials page, find your newly created OAuth app
+2. Click the download icon (⬇) to get `credentials.json`
+3. This file is optional — Chat Buddy will prompt you for Client ID/Secret during setup
+
+### Step 5: Set Up Chat Buddy
+
+When you run `chat-buddy init`, you'll be asked for a **Google API Key**. You have two options:
+
+| Option | Process |
+|--------|---------|
+| **Option A: Use OAuth (Recommended)** | Leave the field blank during `init`. Later, run `chat-buddy login` to generate an OAuth token. Chat Buddy will prompt for your Client ID and Secret. |
+| **Option B: Manual Setup** | Place your downloaded `credentials.json` in your working directory or set `GOOGLE_OAUTH_CREDENTIALS_PATH=/path/to/credentials.json` as an environment variable. |
+
+### Step 6: Generate OAuth Token
+
+```bash
+chat-buddy login
+```
+
+This opens your browser to Google's consent screen. Approve access and the token is saved to `~/.botwithaki/google/token.json` automatically.
+
+### Verify Everything Works
+
+Once set up, test with an in-chat command:
+
+```
+/schedule lunch meeting tomorrow at 2pm
+```
+
+If the calendar syncs successfully, your event appears in Google Calendar.
 
 ---
 
@@ -122,6 +185,8 @@ Scan QR to login:
 Open WhatsApp → **Settings** → **Linked Devices** → **Link a Device** → Scan the code.
 
 **Subsequent runs:** Your session is persisted automatically. No QR scan needed unless you run `chat-buddy new --config` to reset auth.
+
+By default, user messages are debounced per user. If someone sends multiple quick messages, Chat Buddy waits briefly and replies once with a combined response.
 
 ---
 
@@ -224,6 +289,41 @@ After running this, the next `chat-buddy run` will require a fresh QR scan and (
    API keys updated securely
    Auth sessions cleared — re-scan QR on next run
 ```
+
+---
+
+## Message Debounce and Token Optimization
+
+To reduce unnecessary token usage, Chat Buddy buffers rapid consecutive messages from the same user and sends one combined request to the agent.
+
+### How it works
+
+1. User sends multiple quick messages.
+2. Bot waits for a short pause window.
+3. Messages are merged into one batched prompt.
+4. Bot sends one AI reply instead of multiple separate replies.
+
+Example:
+
+- Incoming: `hey`
+- Incoming: `how are you`
+- Outgoing: one combined reply after pause
+
+### Configure debounce delay
+
+Set environment variable `CHAT_BUDDY_RESPONSE_DEBOUNCE_MS`.
+
+- Default: `2200`
+- Minimum: `300`
+- Maximum: `15000`
+
+Example:
+
+```bash
+CHAT_BUDDY_RESPONSE_DEBOUNCE_MS=1800 chat-buddy run
+```
+
+Note: command messages such as `/time`, `/history`, `/reset`, and `/schedule` are handled immediately and are not debounced.
 
 ---
 
