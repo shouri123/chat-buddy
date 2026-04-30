@@ -1,3 +1,6 @@
+/**
+ * SessionMeetingStore
+ */
 export type SessionMeetingRecord = {
   requestedBy: string;
   title: string;
@@ -11,7 +14,7 @@ const MAX_SESSION_MEETINGS = 20;
 const meetingRecords: SessionMeetingRecord[] = [];
 
 export const addSessionMeetingRecord = (
-  record: Omit<SessionMeetingRecord, "createdAt">
+  record: Omit<SessionMeetingRecord, "createdAt">,
 ): SessionMeetingRecord => {
   const entry: SessionMeetingRecord = {
     ...record,
@@ -29,7 +32,7 @@ export const addSessionMeetingRecord = (
 
 export const getLatestMeetingForRequesterSince = (
   requestedBy: string,
-  sinceEpochMs: number
+  sinceEpochMs: number,
 ): SessionMeetingRecord | null => {
   for (let i = meetingRecords.length - 1; i >= 0; i -= 1) {
     const item = meetingRecords[i];

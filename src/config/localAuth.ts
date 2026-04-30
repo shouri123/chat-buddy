@@ -1,3 +1,6 @@
+/**
+ * LocalAuth
+ */
 import { authenticate } from "@google-cloud/local-auth";
 import fs from "fs";
 import * as readline from "readline/promises";
@@ -11,7 +14,7 @@ import {
 const promptForCredentials = async (): Promise<string> => {
   if (!process.stdin.isTTY) {
     throw new Error(
-      "Google OAuth credentials not found. Run in an interactive terminal or set GOOGLE_OAUTH_CREDENTIALS_PATH / GOOGLE_OAUTH_CREDENTIALS_JSON."
+      "Google OAuth credentials not found. Run in an interactive terminal or set GOOGLE_OAUTH_CREDENTIALS_PATH / GOOGLE_OAUTH_CREDENTIALS_JSON.",
     );
   }
 
@@ -22,7 +25,9 @@ const promptForCredentials = async (): Promise<string> => {
   try {
     const clientId = (await rl.question("Google OAuth Client ID: ")).trim();
     const clientSecret = (await rl.question("Google OAuth Client Secret: ")).trim();
-    const redirectUriInput = (await rl.question("Redirect URI (press Enter for http://localhost): ")).trim();
+    const redirectUriInput = (
+      await rl.question("Redirect URI (press Enter for http://localhost): ")
+    ).trim();
 
     if (!clientId || !clientSecret) {
       throw new Error("Client ID and Client Secret are required to generate credentials.");
@@ -31,7 +36,7 @@ const promptForCredentials = async (): Promise<string> => {
     return saveGeneratedGoogleCredentials(
       clientId,
       clientSecret,
-      redirectUriInput || "http://localhost"
+      redirectUriInput || "http://localhost",
     );
   } finally {
     rl.close();

@@ -1,3 +1,6 @@
+/**
+ * GoogleAuth
+ */
 import { google } from "googleapis";
 import fs from "fs";
 import {
@@ -10,30 +13,17 @@ export async function getAuth() {
     const credentialsPath = resolveGoogleCredentialsPath();
     const tokenPath = resolveGoogleTokenPath();
 
-    // Load OAuth credentials
-    const credentials = JSON.parse(
-      fs.readFileSync(credentialsPath, "utf-8")
-    );
+    const credentials = JSON.parse(fs.readFileSync(credentialsPath, "utf-8"));
 
-    const { client_secret, client_id, redirect_uris } =
-      credentials.installed || credentials.web;
+    const { client_secret, client_id, redirect_uris } = credentials.installed || credentials.web;
 
-    const oAuth2Client = new google.auth.OAuth2(
-      client_id,
-      client_secret,
-      redirect_uris[0]
-    );
+    const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
-    // Load saved token
     if (!fs.existsSync(tokenPath)) {
-      throw new Error(
-        "Not authenticated. Run 'chat-buddy login' first."
-      );
+      throw new Error("Not authenticated. Run 'chat-buddy login' first.");
     }
 
-    const token = JSON.parse(
-      fs.readFileSync(tokenPath, "utf-8")
-    );
+    const token = JSON.parse(fs.readFileSync(tokenPath, "utf-8"));
 
     oAuth2Client.setCredentials(token);
 
@@ -41,8 +31,6 @@ export async function getAuth() {
   } catch (error: any) {
     console.error("Google Auth Error:", error.message);
 
-    throw new Error(
-      "Authentication failed. Run 'chat-buddy login' to continue."
-    );
+    throw new Error("Authentication failed. Run 'chat-buddy login' to continue.");
   }
 }

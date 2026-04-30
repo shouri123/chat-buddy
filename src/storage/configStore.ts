@@ -1,9 +1,11 @@
+/**
+ * ConfigStore
+ */
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 import os from "os";
 
-// --- Types ---
 export interface BotConfig {
   username: string;
   agentName: string;
@@ -13,7 +15,6 @@ export interface BotConfig {
   timezone: string;
 }
 
-// --- Paths ---
 const STORAGE_DIR_NAME = ".botwithaki";
 
 export const getStorageDir = (): string => {
@@ -24,14 +25,9 @@ export const getConfigPath = (): string => {
   return path.join(getStorageDir(), "config.json");
 };
 
-// --- Encryption (AES-256-CBC, machine-derived key) ---
 const ALGORITHM = "aes-256-cbc";
 const IV_LENGTH = 16;
 
-/**
- * Derives a deterministic 32-byte encryption key from machine-specific identifiers.
- * This ensures config files are useless if copied to another machine.
- */
 const deriveKey = (): Buffer => {
   const machineId = `${os.hostname()}::${os.userInfo().username}::botwithaki-secret-salt`;
   return crypto.createHash("sha256").update(machineId).digest();
@@ -43,7 +39,6 @@ export const encrypt = (plainText: string): string => {
   const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
   let encrypted = cipher.update(plainText, "utf8", "hex");
   encrypted += cipher.final("hex");
-  // Store IV alongside encrypted data: iv:encrypted
   return `${iv.toString("hex")}:${encrypted}`;
 };
 
@@ -60,28 +55,18 @@ export const decrypt = (encryptedText: string): string => {
   return decrypted;
 };
 
-// --- Storage Directory ---
 export const ensureStorageDir = (): void => {
   const dir = getStorageDir();
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
-  // Set restrictive permissions (owner-only) on non-Windows
   if (process.platform !== "win32") {
     try {
       fs.chmodSync(dir, 0o700);
-    } catch {
-      // Ignore permission errors on some file systems
-    }
+    } catch {}
   }
 };
 
-// --- Config CRUD ---
-
-/**
- * Saves config to disk with API keys encrypted.
- * NEVER stores API keys in plain text.
- */
 export const saveConfig = (config: BotConfig): void => {
   ensureStorageDir();
 
@@ -97,20 +82,13 @@ export const saveConfig = (config: BotConfig): void => {
   const configPath = getConfigPath();
   fs.writeFileSync(configPath, JSON.stringify(encryptedConfig, null, 2), "utf-8");
 
-  // Set restrictive permissions on the config file
   if (process.platform !== "win32") {
     try {
       fs.chmodSync(configPath, 0o600);
-    } catch {
-      // Ignore permission errors
-    }
+    } catch {}
   }
 };
 
-/**
- * Loads config from disk, decrypting API keys in memory.
- * Returns null if config doesn't exist.
- */
 export const loadConfig = (): BotConfig | null => {
   const configPath = getConfigPath();
   if (!fs.existsSync(configPath)) {
@@ -133,9 +111,6 @@ export const loadConfig = (): BotConfig | null => {
   }
 };
 
-/**
- * Checks if a valid config exists.
- */
 export const configExists = (): boolean => {
   return fs.existsSync(getConfigPath());
 };

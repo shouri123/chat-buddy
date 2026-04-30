@@ -1,30 +1,18 @@
+/**
+ * ChatHistoryStore
+ */
 import fs from "fs";
 import path from "path";
 import { getStorageDir, ensureStorageDir } from "./configStore.js";
 
-// --- Types ---
+export type UserChatHistory = Record<string, string>;
+export type ChatHistory = Record<string, UserChatHistory>;
 
-/**
- * Chat history format:
- * {
- *   "shouri": {
- *     "2024-01-01T12:00:00.000+05:30": "HEY",
- *     "2024-01-01T12:01:00.000+05:30": "[agent] What's up?"
- *   }
- * }
- */
-export type UserChatHistory = Record<string, string>; // timestamp → message
-export type ChatHistory = Record<string, UserChatHistory>; // contactName → { timestamp → message }
-
-// --- In-memory cache ---
 let chatHistoryCache: ChatHistory | null = null;
 
-// --- Paths ---
 const getChatHistoryPath = (): string => {
   return path.join(getStorageDir(), "chat_history.json");
 };
-
-// --- Load / Save ---
 
 export const loadChatHistory = (): ChatHistory => {
   if (chatHistoryCache) return chatHistoryCache;
@@ -51,19 +39,13 @@ const saveChatHistory = (): void => {
   fs.writeFileSync(historyPath, JSON.stringify(chatHistoryCache, null, 2), "utf-8");
 };
 
-// --- Operations ---
-
-/**
- * Appends a message with the current timestamp.
- * Prefix agent messages with [agent] to distinguish them.
- */
 export const appendMessage = (
   contactName: string,
   message: string,
   isAgent: boolean = false,
 ): void => {
   const history = loadChatHistory();
-  
+
   if (!history[contactName]) {
     history[contactName] = {};
   }
@@ -76,10 +58,6 @@ export const appendMessage = (
   saveChatHistory();
 };
 
-/**
- * Returns the last N messages for a user, formatted as context for the AI agent.
- * Format: "[HH:MM] name: message"
- */
 export const getUserHistoryForContext = (
   contactName: string,
   maxMessages: number = 15,
@@ -108,17 +86,11 @@ export const getUserHistoryForContext = (
   });
 };
 
-/**
- * Returns raw history object for a user.
- */
 export const getUserHistory = (contactName: string): UserChatHistory => {
   const history = loadChatHistory();
   return history[contactName] || {};
 };
 
-/**
- * Clears all chat history for a user.
- */
 export const clearUserHistory = (contactName: string): void => {
   const history = loadChatHistory();
   delete history[contactName];
@@ -126,9 +98,6 @@ export const clearUserHistory = (contactName: string): void => {
   saveChatHistory();
 };
 
-/**
- * Clears all chat history.
- */
 export const clearAllHistory = (): void => {
   chatHistoryCache = {};
   saveChatHistory();

@@ -1,12 +1,11 @@
+/**
+ * Reset
+ */
 import fs from "fs";
 import path from "path";
 
 export const resetAuth = (): void => {
-  const folders: string[] = [
-    ".wwebjs_auth",
-    ".wwebjs_cache",
-    ".wwebjs_session",
-  ];
+  const folders: string[] = [".wwebjs_auth", ".wwebjs_cache", ".wwebjs_session"];
 
   folders.forEach((folder) => {
     const dir = path.join(process.cwd(), folder);

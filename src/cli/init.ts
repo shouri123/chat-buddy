@@ -1,3 +1,6 @@
+/**
+ * Init
+ */
 import * as readline from "readline/promises";
 import { stdin as input, stdout as output } from "process";
 import ora from "ora";
@@ -44,7 +47,6 @@ export const runInit = async (): Promise<void> => {
   const rl = readline.createInterface({ input, output });
 
   try {
-    // 1. Username
     console.log(pc.bold(pc.white("  📋 Step 1: Your Identity")));
     const username = await ask(rl, "Enter your name (e.g. Asad)");
     if (!username) {
@@ -54,7 +56,6 @@ export const runInit = async (): Promise<void> => {
     }
     console.log();
 
-    // 2. Agent Name
     console.log(pc.bold(pc.white("  🤖 Step 2: Agent Configuration")));
     const agentName = await ask(rl, "Enter your agent's name (e.g. Luffy)");
     if (!agentName) {
@@ -64,7 +65,6 @@ export const runInit = async (): Promise<void> => {
     }
     console.log();
 
-    // 3. OpenAI API Key
     console.log(pc.bold(pc.white("  🔑 Step 3: API Keys")));
     console.log(pc.dim("     Your keys are encrypted using AES-256 and stored locally."));
     console.log(pc.dim("     They are never sent anywhere except to the respective API services."));
@@ -78,7 +78,6 @@ export const runInit = async (): Promise<void> => {
     }
     console.log();
 
-    // 4. Google API Key
     const googleApiKey = await ask(rl, "Enter your Google API key (AIza...)");
     if (!googleApiKey) {
       console.log(pc.red("  ✗ Google API key is required."));
@@ -89,7 +88,6 @@ export const runInit = async (): Promise<void> => {
 
     rl.close();
 
-    // Save config
     const spinner = ora({ text: "Encrypting and saving configuration...", color: "green" }).start();
     await new Promise((r) => setTimeout(r, 800));
 

@@ -1,3 +1,6 @@
+/**
+ * Contact Tool
+ */
 import { tool } from "@openai/agents";
 import { z } from "zod";
 import { contacts } from "../data/data.js";

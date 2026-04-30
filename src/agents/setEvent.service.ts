@@ -1,3 +1,8 @@
+/**
+ * Set Event Service
+ * Defines a specialized OpenAI agent for interacting with the Google Calendar API
+ * to create reminders and schedule Google Meet events.
+ */
 import { Agent } from "@openai/agents";
 import { createReminderTool } from "../tools/createReminder.tool.js";
 import { createMeetingTool } from "../tools/createMeeting.tool.js";

@@ -1,8 +1,10 @@
+/**
+ * CreateReminder Tool
+ */
 import { tool } from "@openai/agents";
 import { z } from "zod";
 import { createReminder } from "../services/gooleReminder.service.js";
 
-// standard way of input
 export const ReminderInputSchema = z
   .object({
     title: z.string(),
@@ -11,7 +13,6 @@ export const ReminderInputSchema = z
   })
   .strict();
 
-// SANDARD OUTPUT SCHEMA
 export const ReminderOutputSchema = z
   .object({
     success: z.boolean(),
@@ -30,11 +31,7 @@ export const createReminderTool = tool({
   execute: async (input) => {
     try {
       console.log("TOOL INPUT:", input);
-      const result = await createReminder(
-        input.title,
-        input.description ?? "",
-        input.date,
-      );
+      const result = await createReminder(input.title, input.description ?? "", input.date);
       console.log("TOOL RESULT:", result);
       return {
         success: true,

@@ -1,3 +1,6 @@
+/**
+ * GoogleMeet Service
+ */
 import { google } from "googleapis";
 import { getAuth } from "../utils/googleAuth.js";
 import { calendar_v3 } from "googleapis";
@@ -22,9 +25,7 @@ export const createMeeting = async (
       timeZone: "Asia/Kolkata",
     },
     end: {
-      dateTime: new Date(
-        new Date(date).getTime() + 60 * 60 * 1000,
-      ).toISOString(),
+      dateTime: new Date(new Date(date).getTime() + 60 * 60 * 1000).toISOString(),
       timeZone: "Asia/Kolkata",
     },
     attendees: attendeeEmails.map((email) => ({ email })),

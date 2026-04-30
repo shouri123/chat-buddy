@@ -1,3 +1,8 @@
+/**
+ * Core Agent Service
+ * Initializes and executes the main OpenAI agent with custom personality traits,
+ * tools, and handoff logic for responding to user messages.
+ */
 import { Agent, run } from "@openai/agents";
 import { createProtocols } from "../config/agent.protocol.js";
 import { getStarredContacts } from "../tools/contact.tool.js";
@@ -8,9 +13,6 @@ import { setReminderandMeetAgent } from "./setEvent.service.js";
 import { withRequesterContext } from "../storage/runContext.js";
 import { getLatestMeetingForRequesterSince } from "../storage/sessionMeetingStore.js";
 
-/**
- * Creates and runs the AI agent dynamically based on config.
- */
 export const runAgent = async (
   userId: string,
   contactName: string,
@@ -20,11 +22,11 @@ export const runAgent = async (
 ): Promise<string> => {
   const protocols = createProtocols(agentName, username);
 
-  // Get timestamped chat history from persistent storage
   const historyLines = getUserHistoryForContext(contactName, 15);
-  const historyContext = historyLines.length > 0
-    ? `Previous conversation:\n${historyLines.join("\n")}`
-    : "No previous conversation.";
+  const historyContext =
+    historyLines.length > 0
+      ? `Previous conversation:\n${historyLines.join("\n")}`
+      : "No previous conversation.";
 
   const agent = new Agent({
     name: protocols.name,

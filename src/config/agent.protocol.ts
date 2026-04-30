@@ -1,8 +1,8 @@
+/**
+ * Agent Protocol
+ */
 import { protocolType } from "../types/types.js";
 
-/**
- * Creates protocol config dynamically based on user's agent name and username.
- */
 export const createProtocols = (agentName: string, username: string): protocolType => ({
   name: agentName,
   allowGroupReplies: false,
@@ -47,5 +47,4 @@ export const createProtocols = (agentName: string, username: string): protocolTy
             - Reference previous messages when relevant to give coherent, contextual responses.`,
 });
 
-// Default protocols (for backwards compatibility)
 export const protocols: protocolType = createProtocols("Luffy", "Asad");

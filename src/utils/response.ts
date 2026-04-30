@@ -1,11 +1,12 @@
+/**
+ * Response
+ */
 import { google, calendar_v3 } from "googleapis";
 import { getAuth } from "../utils/googleAuth.js";
 
 type EventType = calendar_v3.Schema$Event;
 
-export const createEvent = async (
-  event: EventType
-): Promise<calendar_v3.Schema$Event> => {
+export const createEvent = async (event: EventType): Promise<calendar_v3.Schema$Event> => {
   const auth = await getAuth();
 
   const cal = google.calendar({

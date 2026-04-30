@@ -1,3 +1,6 @@
+/**
+ * Banner
+ */
 import pc from "picocolors";
 import ora from "ora";
 

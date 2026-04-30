@@ -1,3 +1,6 @@
+/**
+ * CreateMeeting Tool
+ */
 import { tool } from "@openai/agents";
 import { z } from "zod";
 import pc from "picocolors";
@@ -29,8 +32,7 @@ export type MeetingOutput = z.infer<typeof MeetingOutputSchema>;
 
 export const createMeetingTool = tool({
   name: "create_meeting",
-  description:
-    "Create a Google Calendar meeting with a Google Meet link and invite attendees",
+  description: "Create a Google Calendar meeting with a Google Meet link and invite attendees",
   parameters: MeetingInputSchema,
 
   execute: async (input): Promise<MeetingOutput> => {

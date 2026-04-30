@@ -1,3 +1,6 @@
+/**
+ * Bot
+ */
 import pkg from "whatsapp-web.js";
 import qrcode from "qrcode-terminal";
 import { Client as ClientType } from "whatsapp-web.js";
@@ -20,11 +23,7 @@ export class WhatsAppBot {
       authStrategy: new LocalAuth({ dataPath: getStorageDir() }),
       puppeteer: {
         headless: true,
-        args: [
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-dev-shm-usage",
-        ],
+        args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
         timeout: 60000,
       },
     });

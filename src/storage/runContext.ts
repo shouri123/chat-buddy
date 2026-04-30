@@ -1,3 +1,6 @@
+/**
+ * RunContext
+ */
 import { AsyncLocalStorage } from "async_hooks";
 
 type RunContext = {
@@ -8,7 +11,7 @@ const runContextStore = new AsyncLocalStorage<RunContext>();
 
 export const withRequesterContext = async <T>(
   requestedBy: string,
-  runFn: () => Promise<T>
+  runFn: () => Promise<T>,
 ): Promise<T> => {
   return await runContextStore.run({ requestedBy }, runFn);
 };

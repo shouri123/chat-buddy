@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+/**
+ * Index
+ */
 
 import { Command } from "commander";
 import { runInit } from "./init.js";
@@ -25,7 +28,6 @@ program
   .description("🤖 Chat-Buddy — Automate, Reply, Schedule, Assist")
   .version("1.0.4");
 
-// ─── init ───────────────────────────────────────────────────────────────────
 program
   .command("init")
   .description("Set up Chat-Buddy — enter your API keys, username, and agent name")
@@ -38,7 +40,6 @@ program
     }
   });
 
-// ─── run ────────────────────────────────────────────────────────────────────
 program
   .command("run")
   .description("Start the WhatsApp AI Bot")
@@ -51,7 +52,6 @@ program
     }
   });
 
-// ─── login / log ────────────────────────────────────────────────────────────
 program
   .command("login")
   .alias("log")
@@ -82,7 +82,6 @@ program
     }
   });
 
-// ─── key ────────────────────────────────────────────────────────────────────
 program
   .command("key")
   .description("Rotate / update your OpenAI and Google API keys")
@@ -138,7 +137,6 @@ program
     }
   });
 
-// ─── new --config ───────────────────────────────────────────────────────────
 program
   .command("new")
   .description("Reconfigure Chat-Buddy — change agent name, rotate keys & reset auth sessions")
@@ -163,13 +161,11 @@ program
     const rl = readline.createInterface({ input, output });
 
     try {
-      // 1 — Agent Name
       console.log(pc.bold(pc.white("  🤖 New Agent Identity")));
       console.log(pc.dim(`     Current agent name: ${pc.bold(config.agentName)}`));
       const newAgentName = await rl.question(pc.cyan("  ➤ New agent name (leave blank to keep): "));
       console.log();
 
-      // 2 — API Keys
       console.log(pc.bold(pc.white("  🔑 API Key Rotation")));
       console.log(pc.dim("     Leave blank to keep the current key.\n"));
       const newOpenai = await rl.question(pc.cyan("  ➤ New OpenAI API key (sk-...): "));
@@ -187,11 +183,9 @@ program
         process.exit(1);
       }
 
-      // 3 — Reset auth sessions
       console.log(pc.bold(pc.white("  🗑  Clearing auth sessions...")));
       const storageDir = getStorageDir();
 
-      // Delete WhatsApp session
       const waAuthPath = path.join(storageDir, ".wwebjs_auth");
       if (fs.existsSync(waAuthPath)) {
         fs.rmSync(waAuthPath, { recursive: true, force: true });
@@ -200,7 +194,6 @@ program
         console.log(pc.dim("     – No WhatsApp session found"));
       }
 
-      // Delete Google token(s)
       let deletedAnyToken = false;
       for (const tokenPath of getGoogleTokenCleanupPaths()) {
         if (fs.existsSync(tokenPath)) {
@@ -216,7 +209,6 @@ program
 
       console.log();
 
-      // 4 — Save updated config
       const updatedConfig: BotConfig = {
         ...config,
         agentName: trimmedAgent || config.agentName,

@@ -1,3 +1,6 @@
+/**
+ * GoogleOAuthPaths
+ */
 import fs from "fs";
 import os from "os";
 import path from "path";
@@ -17,7 +20,7 @@ const ANCESTOR_CREDENTIALS_PATHS = [
 
 const PACKAGE_CREDENTIALS_PATH = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  "../../credentials.json"
+  "../../credentials.json",
 );
 
 const ensureGoogleDir = (): void => {
@@ -76,7 +79,7 @@ export const resolveGoogleCredentialsPath = (): string => {
 
   throw new Error(
     "No Google OAuth credentials found. Provide one of: credentials.json in current directory, " +
-      "an ancestor directory, GOOGLE_OAUTH_CREDENTIALS_PATH, GOOGLE_OAUTH_CREDENTIALS_JSON, or bundled package credentials.json."
+      "an ancestor directory, GOOGLE_OAUTH_CREDENTIALS_PATH, GOOGLE_OAUTH_CREDENTIALS_JSON, or bundled package credentials.json.",
   );
 };
 
@@ -98,7 +101,7 @@ export const resolveGoogleTokenPath = (): string => {
 export const saveGeneratedGoogleCredentials = (
   clientId: string,
   clientSecret: string,
-  redirectUri = "http://localhost"
+  redirectUri = "http://localhost",
 ): string => {
   const credentials = {
     installed: {
