@@ -53,7 +53,9 @@
     "@openai/agents-openai": "^0.8.5",
     "commander": "^13.1.0",
     "dotenv": "^17.2.4",
+    "express": "^5.2.1",
     "googleapis": "^171.4.0",
+    "hono": "^4.12.19",
     "openai": "^6.35.0",
     "ora": "^9.3.0",
     "picocolors": "^1.1.1",
@@ -63,12 +65,12 @@
   },
   "devDependencies": {
     "@types/qrcode-terminal": "^0.12.2",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.3",
+    "@typescript-eslint/parser": "^8.59.3",
+    "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.2.5",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=18.0.0"

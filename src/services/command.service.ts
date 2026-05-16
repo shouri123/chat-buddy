@@ -1,8 +1,9 @@
 /**
  * Command Service
  */
-import { Message as MessageType } from "whatsapp-web.js";
 import { clearHistory, getHistory } from "./memory.service.js";
+
+type MessageType = import("whatsapp-web.js").Message;
 
 export const handleCommand = async (message: MessageType, text: string): Promise<void> => {
   if (text == "/") {
