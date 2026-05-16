@@ -3,12 +3,13 @@
  * Processes incoming WhatsApp messages, handles debouncing for rapid consecutive texts,
  * filters unwanted messages, and orchestrates agent responses and commands.
  */
-import { Message as MessageType } from "whatsapp-web.js";
 import { runAgent } from "../agents/agent.servce.js";
 import { botRebootTime } from "../bot.js";
 import { createProtocols } from "../config/agent.protocol.js";
 import { storeMessage } from "./memory.service.js";
 import { handleCommand } from "./command.service.js";
+
+type MessageType = import("whatsapp-web.js").Message;
 
 type PendingUserReply = {
   messages: string[];

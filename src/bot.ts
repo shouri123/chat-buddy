@@ -3,10 +3,11 @@
  */
 import pkg from "whatsapp-web.js";
 import qrcode from "qrcode-terminal";
-import { Client as ClientType } from "whatsapp-web.js";
 import { handleMessages } from "./services/messageHandler.service.js";
 import { getBanner } from "./utils/banner.js";
 import { getStorageDir } from "./storage/configStore.js";
+
+type ClientType = import("whatsapp-web.js").Client;
 
 const { Client, LocalAuth } = pkg;
 
