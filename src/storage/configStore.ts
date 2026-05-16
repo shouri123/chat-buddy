@@ -63,7 +63,7 @@ export const ensureStorageDir = (): void => {
   if (process.platform !== "win32") {
     try {
       fs.chmodSync(dir, 0o700);
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }
@@ -87,7 +87,7 @@ export const saveConfig = (config: BotConfig): void => {
   if (process.platform !== "win32") {
     try {
       fs.chmodSync(configPath, 0o600);
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }
@@ -109,7 +109,7 @@ export const loadConfig = (): BotConfig | null => {
       allowGroupReplies: raw.allowGroupReplies ?? false,
       timezone: raw.timezone ?? "Asia/Kolkata",
     };
-  } catch (error) {
+  } catch {
     console.error("Failed to load config. It may be corrupted or from another machine.");
     return null;
   }
