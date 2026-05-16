@@ -9,3 +9,4 @@ credentials.json
 token.json
 .botwithaki/
 *.tgz
+storage/sessions/

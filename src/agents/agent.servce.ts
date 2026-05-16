@@ -6,12 +6,25 @@
 import { Agent, run } from "@openai/agents";
 import { createProtocols } from "../config/agent.protocol.js";
 
-import { getUserHistoryForContext } from "../storage/chatHistoryStore.js";
 import { getTime } from "../tools/time.tool.js";
 import { getChatHistory } from "../tools/getHistory.js";
 import { setReminderandMeetAgent } from "./setEvent.service.js";
 import { withRequesterContext } from "../storage/runContext.js";
 import { getLatestMeetingForRequesterSince } from "../storage/sessionMeetingStore.js";
+import { getContext, saveContext } from "../services/conversationService.js";
+import type { Message } from "../storage/interfaces/ConversationStore.js";
+
+const formatSessionMessage = (message: Message, contactName: string): string => {
+  const timeStr = new Date(message.timestamp).toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Asia/Kolkata",
+  });
+
+  const speaker = message.role === "assistant" ? "assistant" : contactName;
+  return `[${timeStr}] ${speaker}: ${message.content}`;
+};
 
 export const runAgent = async (
   userId: string,
@@ -22,10 +35,10 @@ export const runAgent = async (
 ): Promise<string> => {
   const protocols = createProtocols(agentName, username);
 
-  const historyLines = getUserHistoryForContext(contactName, 15);
+  const sessionHistory = await getContext(userId);
   const historyContext =
-    historyLines.length > 0
-      ? `Previous conversation:\n${historyLines.join("\n")}`
+    sessionHistory.length > 0
+      ? `Previous conversation:\n${sessionHistory.map((message) => formatSessionMessage(message, contactName)).join("\n")}`
       : "No previous conversation.";
 
   const agent = new Agent({
@@ -64,6 +77,20 @@ export const runAgent = async (
   if (latestMeeting && !finalOutput.includes(latestMeeting.meetLink)) {
     finalOutput = `${finalOutput}\nMeet link: ${latestMeeting.meetLink}\nMeeting time: ${latestMeeting.meetingTime}`;
   }
+
+  await saveContext(userId, [
+    ...sessionHistory,
+    {
+      role: "user",
+      content: userMessage,
+      timestamp: runStartedAt,
+    },
+    {
+      role: "assistant",
+      content: finalOutput,
+      timestamp: Date.now(),
+    },
+  ]);
 
   return finalOutput;
 };
