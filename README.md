@@ -15,7 +15,7 @@ Built with the OpenAI Agents SDK · Custom Tools · Per-User Memory · Guardrail
 
 ---
 
-[Installation](#installation) · [Quick Start](#quick-start) · [Commands](#commands) · [Docker](#running-with-docker) · [Message Debounce and Token Optimization](#message-debounce-and-token-optimization) · [Architecture](#architecture) · [Chat Commands](#in-chat-commands) · [Security](#security--privacy) · [Contributing](#contributing)
+[Installation](#installation) · [Quick Start](#quick-start) · [Commands](#commands) · [Architecture](#architecture) · [Chat Commands](#in-chat-commands) · [Docker](#running-with-docker) · [Troubleshooting](#troubleshooting) · [FAQ](#faq) · [Security](#security--privacy) · [Contributing](#contributing)
 
 </div>
 
@@ -25,7 +25,18 @@ Built with the OpenAI Agents SDK · Custom Tools · Per-User Memory · Guardrail
 
 **Chat Buddy** is an AI-powered WhatsApp assistant that runs entirely from your terminal. It acts as your personal proxy — answering messages, scheduling calendar events, and managing chats with a personality you define.
 
-### Highlights
+## Features Overview
+
+- AI-powered WhatsApp assistant
+- Personalized conversational memory
+- Google Calendar scheduling support
+- WhatsApp QR authentication flow
+- Secure encrypted API key storage
+- Built-in guardrails and safety validation
+- Token optimization with message debouncing
+- Docker support for simplified deployment
+
+## Highlights
 
 | Feature | Description |
 |---------|-------------|
@@ -39,8 +50,29 @@ Built with the OpenAI Agents SDK · Custom Tools · Per-User Memory · Guardrail
 
 ---
 
+## Prerequisites
+
+Before installing Chat Buddy, make sure you have:
+
+- Node.js >= 18.0.0
+- npm installed
+- A WhatsApp account for QR linking
+- An OpenAI API key
+- (Optional) Google Cloud credentials for Calendar integration
+
+You can verify your Node.js version with:
+
+```bash
+node -v
+```
+
+---
+
 ## Installation
-![Demo](./public/tutorial.gif)
+
+> Terminal setup preview:
+
+![Terminal Setup Preview](./public/tutorial.gif)
 
 ```bash
 # Install globally
@@ -50,7 +82,9 @@ npm i -g chat-buddy
 npx chat-buddy init
 ```
 
-Use `chat-buddy <command>` after global install. Use `npx chat-buddy <command>` only if not installed globally.
+Use `chat-buddy <command>` after global install.
+
+Use `npx chat-buddy <command>` only if not installed globally.
 
 > **Requirements:** Node.js ≥ 18.0.0
 
@@ -58,17 +92,35 @@ Use `chat-buddy <command>` after global install. Use `npx chat-buddy <command>` 
 
 ## Quick Start
 
+Follow these steps to launch Chat Buddy for the first time.
+
+### Step 1 — Initialize the setup wizard
+
 ```bash
-# Step 1 — Run the interactive setup wizard
 chat-buddy init
-
-# Step 2 — Start the bot
-chat-buddy run
-
-# Step 3 — Scan the QR code in WhatsApp → Linked Devices → Link a Device
 ```
 
-That's it. Your AI assistant is now live on WhatsApp.
+This command configures your bot identity and API keys.
+
+### Step 2 — Start the bot
+
+```bash
+chat-buddy run
+```
+
+This launches the WhatsApp client and generates a QR code in your terminal.
+
+### Step 3 — Link WhatsApp
+
+Open WhatsApp on your phone:
+
+`WhatsApp → Linked Devices → Link a Device`
+
+Scan the QR code displayed in the terminal.
+
+![WhatsApp QR Setup](./public/qr-setup-preview.png)
+
+Once connected, your AI assistant is ready to reply to messages on WhatsApp.
 
 ---
 
@@ -135,6 +187,14 @@ If the calendar syncs successfully, your event appears in Google Calendar.
 ---
 
 ## Commands
+
+### Available Commands
+
+- [`chat-buddy init`](#chat-buddy-init)
+- [`chat-buddy run`](#chat-buddy-run)
+- [`chat-buddy login`](#chat-buddy-login-alias-chat-buddy-log)
+- [`chat-buddy key`](#chat-buddy-key)
+- [`chat-buddy new --config`](#chat-buddy-new---config)
 
 Chat Buddy provides a full CLI to manage your bot lifecycle:
 
@@ -370,21 +430,21 @@ Note: command messages such as `/time`, `/history`, `/reset`, and `/schedule` ar
 
 ## In-Chat Commands
 
-These commands can be sent directly in any WhatsApp chat to control the bot:
+These commands can be sent directly in any WhatsApp chat to control the bot.
 
-| Command | Description |
-|---------|-------------|
-| `/history` | Display the recent conversation context (useful for debugging) |
-| `/reset` | Clear the bot's short-term memory for your user |
-| `/schedule` | Schedule a Google Calendar event via natural language |
-| `/time` | Get the current time from the bot |
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/history` | Display recent conversation context for debugging | `/history` |
+| `/reset` | Clear the bot's short-term memory for your user | `/reset` |
+| `/schedule` | Schedule a Google Calendar event using natural language | `/schedule lunch tomorrow at 2pm` |
+| `/time` | Get the current time from the bot | `/time` |
 
 ---
 
 ## Project Structure
 
 ```
-BotWithHaki/
+chat-buddy/
 ├── src/
 │   ├── cli/                 # CLI commands
 │   │   ├── index.ts         # Command registration (init, run, log, key, new)
@@ -457,8 +517,94 @@ npm run dev
 ---
 
 ## Installation Notes
-Some deprecation warnings may appear during `npm install`. 
-These come from `whatsapp-web.js` internals and do not affect functionality.
+
+During `npm install`, you may see some deprecation warnings.
+
+These warnings originate from internal dependencies used by `whatsapp-web.js` and typically do not affect functionality.
+
+If installation completes successfully, Chat Buddy should work normally.
+
+---
+
+## Troubleshooting
+
+### Node.js version issues
+
+If you encounter installation or runtime errors, verify your Node.js version:
+
+```bash
+node -v
+```
+
+Chat Buddy requires **Node.js >= 18.0.0**.
+
+---
+
+### QR code not appearing
+
+If the QR code does not display:
+
+- Restart the bot using `chat-buddy run`
+- Ensure your terminal supports UTF-8 rendering
+- Delete the existing WhatsApp auth session and retry
+
+---
+
+### WhatsApp session disconnected
+
+If WhatsApp disconnects unexpectedly:
+
+```bash
+chat-buddy new --config
+```
+
+Then relaunch the bot and scan the QR code again.
+
+---
+
+### Google Calendar integration not working
+
+Make sure:
+
+- Google Calendar API is enabled
+- OAuth credentials are correct
+- `chat-buddy login` completed successfully
+
+---
+
+### Permission issues on Linux/macOS
+
+If you encounter storage permission errors:
+
+```bash
+chmod -R 700 ~/.botwithaki
+```
+
+This resets secure directory permissions.
+
+---
+
+## FAQ
+
+### Does Chat Buddy store my conversations?
+
+No. Chat history is stored temporarily in memory and cleared when the bot restarts unless explicitly persisted by the user.
+
+### Do I need to scan the QR code every time?
+
+No. WhatsApp sessions are persisted locally after the first successful login.
+
+### Can I use Chat Buddy without Google Calendar integration?
+
+Yes. Google Calendar support is optional and only required for scheduling-related features.
+
+### Where are API keys stored?
+
+API keys are encrypted locally using AES-256 encryption and stored securely on your machine.
+
+### Does Chat Buddy support Docker?
+
+Yes. A Docker setup is included for easier deployment and environment isolation.
 
 ---
 
