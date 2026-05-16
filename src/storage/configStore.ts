@@ -63,7 +63,7 @@ export const ensureStorageDir = (): void => {
   if (process.platform !== "win32") {
     try {
       fs.chmodSync(dir, 0o700);
-    } catch (_e) {
+    } catch (e) {
       /* ignore */
     }
   }
@@ -87,7 +87,7 @@ export const saveConfig = (config: BotConfig): void => {
   if (process.platform !== "win32") {
     try {
       fs.chmodSync(configPath, 0o600);
-    } catch (_e) {
+    } catch (e) {
       /* ignore */
     }
   }
